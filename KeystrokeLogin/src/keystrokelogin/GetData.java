@@ -7,9 +7,7 @@ package keystrokelogin;
 
 import java.util.ArrayList;
 import java.util.Date;
-import org.neuroph.core.NeuralNetwork;
-import org.neuroph.core.data.DataSet;
-import org.neuroph.core.data.DataSetRow;
+import org.neuroph.core.*;
 import org.neuroph.nnet.Perceptron;
 
 /**
@@ -27,7 +25,8 @@ public class GetData extends javax.swing.JFrame {
      * Creates new form GetData
      */
     public GetData() {
-        initComponents();
+        //initComponents();
+        gerarRNA();
     }
 
     /**
@@ -40,7 +39,7 @@ public class GetData extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        gerarButton = new javax.swing.JButton();
         passwordTextField = new javax.swing.JTextField();
         cadastrarButton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -50,10 +49,10 @@ public class GetData extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(254, 254, 254));
 
-        jButton1.setText("Gerar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        gerarButton.setText("Gerar");
+        gerarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                gerarButtonActionPerformed(evt);
             }
         });
 
@@ -100,7 +99,7 @@ public class GetData extends javax.swing.JFrame {
                         .addGap(20, 20, 20)
                         .addComponent(cadastrarButton)
                         .addGap(83, 83, 83)
-                        .addComponent(jButton1)
+                        .addComponent(gerarButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
                         .addComponent(jButton3)))
                 .addGap(30, 30, 30))
@@ -119,7 +118,7 @@ public class GetData extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cadastrarButton)
-                    .addComponent(jButton1)
+                    .addComponent(gerarButton)
                     .addComponent(jButton3))
                 .addGap(60, 60, 60))
         );
@@ -140,31 +139,30 @@ public class GetData extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // create new perceptron network 
+    private void gerarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gerarButtonActionPerformed
+        //Gerar resultados falsos para ter uma base de dados maior
+        //...TODO
+        
+        gerarRNA();
+                
+    }//GEN-LAST:event_gerarButtonActionPerformed
+
+    private void gerarRNA(){
+          // create new perceptron network 
         NeuralNetwork neuralNetwork = new Perceptron(2, 1);
         // create training set 
-        DataSet trainingSet = new  DataSet(2, 1); 
+        /*DataSet trainingSet = new  DataSet(2, 1); 
         // add training data to training set (logical OR function) 
-        trainingSet.
-        addRow (new DataSetRow (new double[]{0, 0}, 
-         new double[]{0})); 
-        trainingSet.
-        addRow (new DataSetRow (new double[]{0, 1}, 
-         new double[]{1})); 
-        trainingSet.
-        addRow (new DataSetRow (new double[]{1, 0}, 
-         new double[]{1})); 
-        trainingSet.
-        addRow (new DataSetRow (new double[]{1, 1}, 
-         new double[]{1})); 
+        trainingSet.addRow (new DataSetRow (new double[]{0, 0}, new double[]{0})); 
+        trainingSet.addRow (new DataSetRow (new double[]{0, 1}, new double[]{1})); 
+        trainingSet.addRow (new DataSetRow (new double[]{1, 0}, new double[]{1})); 
+        trainingSet.addRow (new DataSetRow (new double[]{1, 1}, new double[]{1})); 
         // learn the training set 
         neuralNetwork.learn(trainingSet); 
         // save the trained network into file 
-        neuralNetwork.save("or_perceptron.nnet"); 
-                
-    }//GEN-LAST:event_jButton1ActionPerformed
-
+        neuralNetwork.save("or_perceptron.nnet"); */
+    }
+    
     private void cadastrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastrarButtonActionPerformed
         String senha = passwordTextField.getText();
         
@@ -173,13 +171,21 @@ public class GetData extends javax.swing.JFrame {
 
     private void passwordTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordTextFieldKeyReleased
         Date date = new Date();
-				
-        timestamp1 = date.getTime(); 
-        //System.out.println(timestamp1);
+	
+        if(evt.getKeyCode()!=java.awt.event.KeyEvent.VK_ENTER){
+            if(timestamp1 == 0) timestamp1 = date.getTime(); 
+            else if(timestamp1!=0){
+                timestamp2 = date.getTime();         
+                long diff = timestamp2  - timestamp1 ;
+                time_diff.add(diff);
+                System.out.println(diff);
+                timestamp1 = timestamp2;
+            }
+        }
     }//GEN-LAST:event_passwordTextFieldKeyReleased
 
     private void passwordTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordTextFieldKeyPressed
-        Date date = new Date();
+        /*Date date = new Date();
 				
         timestamp2 = date.getTime();
         
@@ -187,7 +193,7 @@ public class GetData extends javax.swing.JFrame {
            long diff = timestamp2  - timestamp1 ;
            time_diff.add(diff);
            System.out.println(diff);
-        }
+        }*/
     }//GEN-LAST:event_passwordTextFieldKeyPressed
 
     private void check_corretoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_check_corretoActionPerformed
@@ -201,6 +207,8 @@ public class GetData extends javax.swing.JFrame {
         System.out.println("> "+senha+" : "+time_diff);
         passwordTextField.setText("");
         time_diff = new ArrayList<Long>();
+        timestamp1 = 0;
+        timestamp2 = 0;
     }//GEN-LAST:event_passwordTextFieldActionPerformed
 
     /**
@@ -241,7 +249,7 @@ public class GetData extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cadastrarButton;
     private javax.swing.JCheckBox check_correto;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton gerarButton;
     private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField passwordTextField;
