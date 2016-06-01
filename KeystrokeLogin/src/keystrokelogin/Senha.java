@@ -11,12 +11,12 @@ import java.util.ArrayList;
  *
  * @author aluno
  */
-public class senha {
+public class Senha {
     private String nome;
     private ArrayList<Long> tempos;
     private boolean result;
     
-    public senha (String nome, ArrayList<Long> tempos, boolean result){
+    public Senha (String nome, ArrayList<Long> tempos, boolean result){
         this.nome = nome;
         this.tempos = tempos;
         this.result = result;

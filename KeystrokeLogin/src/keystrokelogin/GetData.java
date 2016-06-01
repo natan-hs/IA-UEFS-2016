@@ -5,8 +5,12 @@
  */
 package keystrokelogin;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
@@ -22,7 +26,7 @@ public class GetData extends javax.swing.JFrame {
     private long timestamp2 =0;
     private boolean correto;
     ArrayList<Long> time_diff = new ArrayList<Long>();
-    ArrayList<senha> senhas = new ArrayList<senha>();
+    ArrayList<Senha> senhas = new ArrayList<Senha>();
     String senhaStr = "&";
     
     /**
@@ -45,7 +49,7 @@ public class GetData extends javax.swing.JFrame {
         gerarButton = new javax.swing.JButton();
         passwordTextField = new javax.swing.JTextField();
         cadastrarButton = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        verificarButton = new javax.swing.JButton();
         check_correto = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -80,7 +84,12 @@ public class GetData extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Verificar");
+        verificarButton.setText("Verificação");
+        verificarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                verificarButtonActionPerformed(evt);
+            }
+        });
 
         check_correto.setText("correto?");
         check_correto.addActionListener(new java.awt.event.ActionListener() {
@@ -93,37 +102,36 @@ public class GetData extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(passwordTextField))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(cadastrarButton)
-                        .addGap(83, 83, 83)
-                        .addComponent(gerarButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
-                        .addComponent(jButton3)))
-                .addGap(30, 30, 30))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(check_correto)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                        .addComponent(cadastrarButton)
+                        .addGap(30, 30, 30)
+                        .addComponent(gerarButton)
+                        .addGap(29, 29, 29)
+                        .addComponent(verificarButton)
+                        .addGap(8, 8, 8))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(check_correto))
+                    .addComponent(passwordTextField, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(30, 30, 30))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(37, 37, 37)
                 .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
+                .addGap(18, 18, 18)
                 .addComponent(check_correto)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
+                .addGap(60, 60, 60)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cadastrarButton)
                     .addComponent(gerarButton)
-                    .addComponent(jButton3))
-                .addGap(60, 60, 60))
+                    .addComponent(verificarButton))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -178,19 +186,7 @@ public class GetData extends javax.swing.JFrame {
         // learn the training set 
         neuralNetwork.learn(trainingSet); 
         // save the trained network into file 
-        neuralNetwork.save("or_perceptron.nnet"); 
-        
-        // load the saved network
-        // neuralNetwork = NeuralNetwork.load(“or_perceptron.nnet”);
-        // set network input
-        // neuralNetwork.setInput(0, 0);
-        // calculate network
-        //neuralNetwork.calculate();
-        // get network output
-        /*double[] networkOutput = neuralNetwork.getOutput();
-        for (int i = 0; i< networkOutput.length; i++) {
-            System.out.println(">> "+networkOutput[i]);    
-        }*/
+        neuralNetwork.save("perceptron.nnet"); 
     }
     
     private void cadastrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastrarButtonActionPerformed
@@ -202,7 +198,7 @@ public class GetData extends javax.swing.JFrame {
             senhaStr = passwordTextField.getText();
             System.out.println("senha será: "+senhaStr);
         }
-        senhas.add(new senha(senhaStr, time_diff, correto));
+        senhas.add(new Senha(senhaStr, time_diff, correto));
         System.out.println("> "+senhaStr+" : "+time_diff);
         passwordTextField.setText("");
         time_diff = new ArrayList<Long>();
@@ -245,6 +241,12 @@ public class GetData extends javax.swing.JFrame {
         cadastrar();
     }//GEN-LAST:event_passwordTextFieldActionPerformed
 
+    private void verificarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verificarButtonActionPerformed
+        gerarRNA();
+        Verification verficarJframe = new Verification();
+        verficarJframe.setVisible(true);
+    }//GEN-LAST:event_verificarButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -284,8 +286,8 @@ public class GetData extends javax.swing.JFrame {
     private javax.swing.JButton cadastrarButton;
     private javax.swing.JCheckBox check_correto;
     private javax.swing.JButton gerarButton;
-    private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField passwordTextField;
+    private javax.swing.JButton verificarButton;
     // End of variables declaration//GEN-END:variables
 }
