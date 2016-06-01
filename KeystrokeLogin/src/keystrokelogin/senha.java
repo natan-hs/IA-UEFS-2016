@@ -13,10 +13,10 @@ import java.util.ArrayList;
  */
 public class senha {
     private String nome;
-    private long[] tempos;
+    private ArrayList<Long> tempos;
     private boolean result;
     
-    public senha (String nome, long[] tempos, boolean result){
+    public senha (String nome, ArrayList<Long> tempos, boolean result){
         this.nome = nome;
         this.tempos = tempos;
         this.result = result;
