@@ -22,4 +22,11 @@ public class senha {
         this.result = result;
     }
     
+    public long getTime(int index){
+        return tempos.get(index);
+    }
+
+    public boolean isCorrect(){
+        return result;
+    }
 }

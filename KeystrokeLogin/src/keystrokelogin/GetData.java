@@ -7,7 +7,9 @@ package keystrokelogin;
 
 import java.util.ArrayList;
 import java.util.Date;
-import org.neuroph.core.*;
+import org.neuroph.core.NeuralNetwork;
+import org.neuroph.core.data.DataSet;
+import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.Perceptron;
 
 /**
@@ -21,6 +23,8 @@ public class GetData extends javax.swing.JFrame {
     private boolean correto;
     ArrayList<Long> time_diff = new ArrayList<Long>();
     ArrayList<senha> senhas = new ArrayList<senha>();
+    String senhaStr = "&";
+    
     /**
      * Creates new form GetData
      */
@@ -147,27 +151,65 @@ public class GetData extends javax.swing.JFrame {
     }//GEN-LAST:event_gerarButtonActionPerformed
 
     private void gerarRNA(){
-          // create new perceptron network 
-        NeuralNetwork neuralNetwork = new Perceptron(2, 1);
+        int numEntradas = senhaStr.length()-1; //intervalos de tempo entre as teclas
+        System.out.println("size:  "+(senhaStr.length()-1));
+        double[] entradaAux = new double[numEntradas]; //entrada auxiliar para setar training set (trainingset só aceita double)
+        double[] saidaAux = new double[1]; // saida auxiliar para training set
+        
+        // create new perceptron network 
+        NeuralNetwork neuralNetwork = new Perceptron(numEntradas, 1); //saída igual a 1, senha correta ou não
         // create training set 
-        /*DataSet trainingSet = new  DataSet(2, 1); 
+        DataSet trainingSet = new  DataSet(numEntradas, 1); 
         // add training data to training set (logical OR function) 
-        trainingSet.addRow (new DataSetRow (new double[]{0, 0}, new double[]{0})); 
+        for (int i = 0; i < senhas.size(); i++) {
+            for (int j = 0; j < entradaAux.length; j++) { //loop para pegar os tempos da senha
+                entradaAux[j] = (double)senhas.get(i).getTime(j);
+            }
+            if(senhas.get(i).isCorrect()) saidaAux[0] = 1;
+            else saidaAux[0] = 0;
+            
+            trainingSet.addRow(new DataSetRow(entradaAux, saidaAux));
+        }
+        
+        /*trainingSet.addRow (new DataSetRow (new double[]{0, 0}, new double[]{0})); 
         trainingSet.addRow (new DataSetRow (new double[]{0, 1}, new double[]{1})); 
         trainingSet.addRow (new DataSetRow (new double[]{1, 0}, new double[]{1})); 
-        trainingSet.addRow (new DataSetRow (new double[]{1, 1}, new double[]{1})); 
+        trainingSet.addRow (new DataSetRow (new double[]{1, 1}, new double[]{1})); */
         // learn the training set 
         neuralNetwork.learn(trainingSet); 
         // save the trained network into file 
-        neuralNetwork.save("or_perceptron.nnet"); */
+        neuralNetwork.save("or_perceptron.nnet"); 
+        
+        // load the saved network
+        // neuralNetwork = NeuralNetwork.load(“or_perceptron.nnet”);
+        // set network input
+        // neuralNetwork.setInput(0, 0);
+        // calculate network
+        //neuralNetwork.calculate();
+        // get network output
+        /*double[] networkOutput = neuralNetwork.getOutput();
+        for (int i = 0; i< networkOutput.length; i++) {
+            System.out.println(">> "+networkOutput[i]);    
+        }*/
     }
     
     private void cadastrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastrarButtonActionPerformed
-        String senha = passwordTextField.getText();
-        
-        senhas.add(new senha(senha, time_diff, correto));
+        cadastrar(); //muda esse metodo, pq ele é chamado quando o enter é pressionado tbm
     }//GEN-LAST:event_cadastrarButtonActionPerformed
 
+    private void cadastrar(){
+        if(senhaStr.compareTo("&")==0){ //registra a primeira senha digitada, que será a senha do sistema
+            senhaStr = passwordTextField.getText();
+            System.out.println("senha será: "+senhaStr);
+        }
+        senhas.add(new senha(senhaStr, time_diff, correto));
+        System.out.println("> "+senhaStr+" : "+time_diff);
+        passwordTextField.setText("");
+        time_diff = new ArrayList<Long>();
+        timestamp1 = 0;
+        timestamp2 = 0;
+    }
+    
     private void passwordTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordTextFieldKeyReleased
         Date date = new Date();
 	
@@ -200,14 +242,7 @@ public class GetData extends javax.swing.JFrame {
     }//GEN-LAST:event_check_corretoActionPerformed
 
     private void passwordTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordTextFieldActionPerformed
-        String senha = passwordTextField.getText();
-        
-        senhas.add(new senha(senha, time_diff, correto));
-        System.out.println("> "+senha+" : "+time_diff);
-        passwordTextField.setText("");
-        time_diff = new ArrayList<Long>();
-        timestamp1 = 0;
-        timestamp2 = 0;
+        cadastrar();
     }//GEN-LAST:event_passwordTextFieldActionPerformed
 
     /**
