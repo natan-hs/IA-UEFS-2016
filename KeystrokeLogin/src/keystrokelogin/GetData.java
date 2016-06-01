@@ -25,8 +25,7 @@ public class GetData extends javax.swing.JFrame {
      * Creates new form GetData
      */
     public GetData() {
-        //initComponents();
-        gerarRNA();
+        initComponents();
     }
 
     /**
