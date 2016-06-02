@@ -17,6 +17,7 @@ import org.neuroph.core.Layer;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
+import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.Perceptron;
 import org.neuroph.util.TransferFunctionType;
 
@@ -188,8 +189,8 @@ public class GetData extends javax.swing.JFrame {
         System.out.println("size:  "+(senhaStr.length()-1));
                 
         // create new perceptron network 
-        NeuralNetwork neuralNetwork = new Perceptron(numEntradas, 1); //saída igual a 1, senha correta ou não
-        neuralNetwork.addLayer(new Layer());
+        NeuralNetwork neuralNetwork = new MultiLayerPerceptron(numEntradas, 1); //saída igual a 1, senha correta ou não
+        //neuralNetwork.addLayer(new Layer());
         System.out.println("Numero de layers:" + neuralNetwork.getLayers().length);
         
         // create training set 
