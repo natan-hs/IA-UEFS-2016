@@ -23,11 +23,13 @@ public class Verification extends javax.swing.JFrame {
     private long timestamp1 = 0;
     private long timestamp2 = 0;
     private ArrayList<Long> time_diff=new ArrayList<Long>();
+    private String senhaCorreta;
     /**
      * Creates new form Verfication
      */
-    public Verification() {
+    public Verification(String senha) {
         initComponents();
+        this.senhaCorreta = senha;
     }
 
     /**
@@ -147,71 +149,47 @@ public class Verification extends javax.swing.JFrame {
     }//GEN-LAST:event_verificarButtonActionPerformed
 
     public void verificar() throws FileNotFoundException{
-        double tempo[] = new double[time_diff.size()];
-        for (int i = 0; i < time_diff.size(); i++) {
-            tempo[i] = (double)time_diff.get(i);
-        }
         
-        // load the saved network
-        NeuralNetwork neuralNetwork = NeuralNetwork.load(new FileInputStream(System.getProperty("perceptron.mnet")));
-        // set network input
-        neuralNetwork.setInput(tempo);
-        // calculate network
-        neuralNetwork.calculate();
-        // get network output
-        double[] networkOutput = neuralNetwork.getOutput();
-        for (int i = 0; i< networkOutput.length; i++) {
-            System.out.println(">> "+networkOutput[i]);    
-        }
-        if(networkOutput[0]==1){
+        String senhaInserida = passwordTextField.getText();       
+        
+        if(senhaInserida.equals(senhaCorreta)){
+        
+            double tempo[] = new double[time_diff.size()];
+            for (int i = 0; i < time_diff.size(); i++) {
+                tempo[i] = (double)time_diff.get(i);
+            }
+            
+            // load the saved network
+            //NeuralNetwork neuralNetwork = NeuralNetwork.load(new FileInputStream(System.getProperty("perceptron.mnet")));
+            NeuralNetwork neuralNetwork = NeuralNetwork.createFromFile("perceptron.nnet");
+            // set network input
+            neuralNetwork.setInput(tempo);
+            // calculate network
+            neuralNetwork.calculate();
+            // get network output
+            double[] networkOutput = neuralNetwork.getOutput();
+            for (int i = 0; i< networkOutput.length; i++) {
+                System.out.println(">> "+networkOutput[i]);    
+            }
+            if(networkOutput[0] == 1.0){
+                avisoLabel.setVisible(true);
+                avisoLabel.setText("Senha correta!");
+            }
+            else {
+                avisoLabel.setVisible(true);
+                avisoLabel.setText("Senha incorreta!");  
+            }
+        } else {
             avisoLabel.setVisible(true);
-            avisoLabel.setText("Senha correta!");
-        }
-        else {
-            avisoLabel.setVisible(true);
-            avisoLabel.setText("Senha incorreta!");  
+            avisoLabel.setText("Senha incorreta!");
         }
         
         passwordTextField.setText("");
         timestamp1 = 0;
         timestamp2 = 0;
-        time_diff = new ArrayList<Long>();
+        time_diff = new ArrayList<Long>();        
     }
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Verification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Verification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Verification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Verification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Verification().setVisible(true);
-            }
-        });
-    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel avisoLabel;

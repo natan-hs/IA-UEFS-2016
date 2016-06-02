@@ -25,6 +25,10 @@ public class Senha {
     public long getTime(int index){
         return tempos.get(index);
     }
+    
+    public ArrayList<Long> getTempos(){
+        return tempos;
+    }
 
     public boolean isCorrect(){
         return result;

@@ -8,13 +8,17 @@ package keystrokelogin;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
+import static java.util.Collections.list;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.neuroph.core.Layer;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.Perceptron;
+import org.neuroph.util.TransferFunctionType;
 
 /**
  *
@@ -34,6 +38,27 @@ public class GetData extends javax.swing.JFrame {
      */
     public GetData() {
         initComponents();
+        
+        //teste
+//        senhaStr = "tst";
+//        
+//        time_diff.add((long)0);
+//        time_diff.add((long)0);
+//        correto = false;
+//        cadastrar();
+//        time_diff.add((long)0);
+//        time_diff.add((long)1);
+//        correto = true;
+//        cadastrar();
+//        time_diff.add((long)1);
+//        time_diff.add((long)0);
+//        correto = true;
+//        cadastrar();
+//        time_diff.add((long)1);
+//        time_diff.add((long)1);
+//        correto = true;
+//        cadastrar();
+        
     }
 
     /**
@@ -161,32 +186,48 @@ public class GetData extends javax.swing.JFrame {
     private void gerarRNA(){
         int numEntradas = senhaStr.length()-1; //intervalos de tempo entre as teclas
         System.out.println("size:  "+(senhaStr.length()-1));
-        double[] entradaAux = new double[numEntradas]; //entrada auxiliar para setar training set (trainingset só aceita double)
-        double[] saidaAux = new double[1]; // saida auxiliar para training set
-        
+                
         // create new perceptron network 
         NeuralNetwork neuralNetwork = new Perceptron(numEntradas, 1); //saída igual a 1, senha correta ou não
+        neuralNetwork.addLayer(new Layer());
+        System.out.println("Numero de layers:" + neuralNetwork.getLayers().length);
+        
         // create training set 
         DataSet trainingSet = new  DataSet(numEntradas, 1); 
         // add training data to training set (logical OR function) 
         for (int i = 0; i < senhas.size(); i++) {
+            double[] entradaAux = new double[numEntradas]; //entrada auxiliar para setar training set (trainingset só aceita double)
+                    
             for (int j = 0; j < entradaAux.length; j++) { //loop para pegar os tempos da senha
                 entradaAux[j] = (double)senhas.get(i).getTime(j);
             }
-            if(senhas.get(i).isCorrect()) saidaAux[0] = 1;
-            else saidaAux[0] = 0;
+            System.out.println("Entrada:" + senhas.get(i).getTempos());
             
-            trainingSet.addRow(new DataSetRow(entradaAux, saidaAux));
+            //trainingSet.addRow(entradaAux, saidaAux); 
+            if(senhas.get(i).isCorrect()) {
+                trainingSet.addRow (new DataSetRow (entradaAux,  new double[]{1}));
+            } else {
+                trainingSet.addRow (new DataSetRow (entradaAux,  new double[]{0}));
+            }
+            
         }
         
-        /*trainingSet.addRow (new DataSetRow (new double[]{0, 0}, new double[]{0})); 
-        trainingSet.addRow (new DataSetRow (new double[]{0, 1}, new double[]{1})); 
-        trainingSet.addRow (new DataSetRow (new double[]{1, 0}, new double[]{1})); 
-        trainingSet.addRow (new DataSetRow (new double[]{1, 1}, new double[]{1})); */
+        
+        List<DataSetRow> data = trainingSet.getRows();
+            System.out.println("/////////////////////// \n tamanho: " + data.size());
+            for(int a = 0; a < data.size(); a++){
+                double[] inputs = data.get(a).getInput();
+                double[] outputs = data.get(a).getDesiredOutput();
+                System.out.println("input: "+ inputs[0]);
+                System.out.println("output: "+ outputs[0] + "\n /////////////// \n");
+            }
+                
+                
         // learn the training set 
         neuralNetwork.learn(trainingSet); 
         // save the trained network into file 
         neuralNetwork.save("perceptron.nnet"); 
+        System.out.println("foi");
     }
     
     private void cadastrarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastrarButtonActionPerformed
@@ -197,9 +238,17 @@ public class GetData extends javax.swing.JFrame {
         if(senhaStr.compareTo("&")==0){ //registra a primeira senha digitada, que será a senha do sistema
             senhaStr = passwordTextField.getText();
             System.out.println("senha será: "+senhaStr);
+            senhas.add(new Senha(senhaStr, time_diff, correto));
+            System.out.println("> "+senhaStr+" : "+time_diff);
+        } else if (time_diff.size()!= senhaStr.length()-1){
+            System.out.println("tamanho inválido!"); // caso não bata os tamanhos
+            
+        } else{
+            senhas.add(new Senha(senhaStr, time_diff, correto));
+            System.out.println("> "+senhaStr+" : "+time_diff);
+           
         }
-        senhas.add(new Senha(senhaStr, time_diff, correto));
-        System.out.println("> "+senhaStr+" : "+time_diff);
+        
         passwordTextField.setText("");
         time_diff = new ArrayList<Long>();
         timestamp1 = 0;
@@ -243,7 +292,7 @@ public class GetData extends javax.swing.JFrame {
 
     private void verificarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verificarButtonActionPerformed
         gerarRNA();
-        Verification verficarJframe = new Verification();
+        Verification verficarJframe = new Verification(senhaStr);
         verficarJframe.setVisible(true);
     }//GEN-LAST:event_verificarButtonActionPerformed
 
